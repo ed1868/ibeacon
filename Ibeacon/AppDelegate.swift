@@ -7,14 +7,37 @@
 //
 
 import UIKit
+import CoreLocation
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
 
+    var locationManager : CLLocationManager?
+    
+    var lastProximity : CLProximity?
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let uuidString:String = "B9407F30-F5F8-466E-AFF9-25556B57FE6D"
+        let beaconRegionIdentifier = "ainomads.Ibeacon"
+        
+        let beaconUUID: NSUUID = NSUUID(uuidString: uuidString)!
+        
+        let beaconRegion: CLBeaconRegion = CLBeaconRegion(proximityUUID: beaconUUID as UUID, identifier: beaconRegionIdentifier)
+        
+        print(beaconRegion)
+        
+        
+        locationManager = CLLocationManager()
+        
+     
+        locationManager!.requestAlwaysAuthorization()
+        
+        
+        locationManager!.delegate = self
+        
         return true
     }
 
