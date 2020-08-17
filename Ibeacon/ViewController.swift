@@ -8,12 +8,31 @@
 
 import UIKit
 import CoreLocation
-
+import WebKit
 
 class ViewController: UIViewController {
-
+    var webView: WKWebView!
+    
+    
+    override func loadView() {
+          let webConfiguration = WKWebViewConfiguration()
+          webView = WKWebView(frame: .zero, configuration: webConfiguration)
+          view = webView
+      }
+    
+    
     override func viewDidLoad() {
+        
+        
+        
         super.viewDidLoad()
+        
+        
+        
+        let myURL = URL(string:"https://www.apple.com")
+        let myRequest = URLRequest(url: myURL!)
+        webView.load(myRequest)
+        
         // Do any additional setup after loading the view.
         
         let nc = NotificationCenter.default
@@ -21,10 +40,7 @@ class ViewController: UIViewController {
         nc.addObserver(self, selector: #selector(iBeaconFoundReceivedNotification), name: Notification.Name("iBeaconFoundReceivedNotification"), object: nil)
         
         
-        
-//        NotificationCenter.default.addObserver(self, selector: Selector(("iBeaconFoundReceivedNotification")), name: NSNotification.Name(rawValue: "iBeaconFoundReceivedNotification"), object: nil)
-        
-//        NotificationCenter.default.addObserver(self, selector: "ibeaconFound:", name: NSNotification.Name(rawValue: "ibeaconFound"), object: nil)
+
     
     }
     
@@ -35,6 +51,7 @@ class ViewController: UIViewController {
     
    @objc func iBeaconFoundReceivedNotification(notification : NSNotification){
         
+
         // MARK : TAKE ACTION FROM THE NOTIFICATION
     
         
@@ -53,6 +70,22 @@ class ViewController: UIViewController {
             
             
             self.present(alert,animated: true, completion: nil)
+            
+            let urlString = "https://ai-nomads.com/"
+            
+            let url = URL(string: urlString)
+            
+            
+            
+            let requestObject = URLRequest(url: url!)
+            
+            print("skdjhfkjdshfkjsdhfhdsjkfds-----ksdhfkjsdhfksdf------ \(requestObject)")
+            
+            webView.load(requestObject)
+            
+            
+            
+            
         }
     }
     
