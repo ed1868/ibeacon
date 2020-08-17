@@ -42,8 +42,8 @@ class ViewController: UIViewController {
         
         if let userInfo = notification.userInfo as? Dictionary<String, AnyObject>{
             
-            let major = userInfo["major"]
-            let minor = userInfo["minor"]
+            let major = userInfo["major"]!
+            let minor = userInfo["minor"]!
             
             let messageInfo = "Major ------ \(String(describing: major)) ------ Minor \(String(describing: minor))"
             

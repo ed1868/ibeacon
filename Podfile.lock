@@ -1,0 +1,20 @@
+PODS:
+  - EstimoteBluetoothScanning (1.0.8)
+  - EstimoteProximitySDK (1.7.0):
+    - EstimoteBluetoothScanning (~> 1.0.8)
+
+DEPENDENCIES:
+  - EstimoteProximitySDK
+
+SPEC REPOS:
+  trunk:
+    - EstimoteBluetoothScanning
+    - EstimoteProximitySDK
+
+SPEC CHECKSUMS:
+  EstimoteBluetoothScanning: aef117c8584951609403dc73cb07f6501911a365
+  EstimoteProximitySDK: b0128f51c7487dbd3c073691cec246c8d733808c
+
+PODFILE CHECKSUM: 2a7f880fca38d28b529466bc6f62ca512f1871f8
+
+COCOAPODS: 1.9.3

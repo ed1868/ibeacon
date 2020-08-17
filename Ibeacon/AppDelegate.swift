@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreLocation
+import UserNotifications
+import EstimoteProximitySDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
@@ -15,7 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var locationManager : CLLocationManager?
     
     var lastProximity : CLProximity?
-
+    
+    var proximityObserver: ProximityObserver!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -28,6 +31,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         let beaconRegion: CLBeaconRegion = CLBeaconRegion(proximityUUID: beaconUUID as UUID, identifier: beaconRegionIdentifier)
         
         print(beaconRegion)
+        
+        let notificationCenter = UNUserNotificationCenter.current()
+               notificationCenter.delegate = self
+               notificationCenter.requestAuthorization(options: [.alert, .sound]) { granted, error in
+                   print("notifications permission granted = \(granted), error = \(error?.localizedDescription ?? "(none)")")
+               }
+        
+        
+        
+        let estimoteCloudCredentials = CloudCredentials(appID: "ibeacontest-0ro", appToken: "9bc7cae35b2b6c9b48939a4efa866466")
+
+        proximityObserver = ProximityObserver(credentials: estimoteCloudCredentials, onError: { error in
+            print("ProximityObserver error: \(error)")
+        })
+
+        let zone = ProximityZone(tag: "ibeacontest-0ro", range: ProximityRange.near)
+        zone.onEnter = { context in
+            let content = UNMutableNotificationContent()
+            content.title = "You have just entered Juans Mancave"
+            content.body = "Grab a beer"
+        
+            content.sound = UNNotificationSound.default
+            let request = UNNotificationRequest(identifier: "enter", content: content, trigger: nil)
+            notificationCenter.add(request, withCompletionHandler: nil)
+        }
+        zone.onExit = { context in
+            let content = UNMutableNotificationContent()
+            content.title = "Bye"
+            content.body = "Hope to see you soon"
+            content.sound = UNNotificationSound.default
+            let request = UNNotificationRequest(identifier: "exit", content: content, trigger: nil)
+            notificationCenter.add(request, withCompletionHandler: nil)
+        }
+
+        proximityObserver.startObserving([zone])
         
         
         locationManager = CLLocationManager()
@@ -47,6 +85,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         locationManager!.startRangingBeacons(in: beaconRegion)
         locationManager!.startUpdatingLocation()
         
+        
+        // MARK : SET UP NOTIFICATIONS
+        
+        
+
         
         return true
     }
@@ -71,6 +114,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         print("YOU ENTERED THE REGION")
         
+
+     
+        
     }
 
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
@@ -88,6 +134,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         print("DID RANGE BEACONS: NUMBER OF BEACONS FOUND = \(beacons.count)")
         
         for aBeacon in beacons {
+        
             switch aBeacon.proximity{
             case CLProximity.unknown:
                 print("wtf man this shit unknown.....MAJOR: \(aBeacon.major)---- MINOR: \(aBeacon.minor) accuracy: \(aBeacon.accuracy) RSSI: \(aBeacon.rssi)")
@@ -104,6 +151,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             case CLProximity.immediate:
                  print("wtf man this shit is shit.....MAJOR: \(aBeacon.major)---- MINOR: \(aBeacon.minor) accuracy: \(aBeacon.accuracy) RSSI: \(aBeacon.rssi)")
                 break
+                
             @unknown default:
                 print("YU DONE FCKED UP")
             }
